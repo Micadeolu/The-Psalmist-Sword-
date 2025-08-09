@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Psalmist Sword</title>
+<style>
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 700px;
+    margin: 1rem auto;
+    padding: 1rem 1.5rem;
+    background: #ffa726;
+    color: #222;
+  }
+  h1, h2 {
+    text-align: center;
+    color: #2e3a59;
+  }
+  label {
+    font-weight: 600;
+    margin-top: 1rem;
+    display: block;
+  }
+  input {
+    padding: 0.5rem;
+    width: 100%;
+    font-size: 1.1rem;
+    border: 1.8px solid #aaa;
+    border-radius: 5px;
+    margin-top: 0.4rem;
+    box-sizing: border-box;
+  }
+  button {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: white;
+  }
+  #matchButton {
+    background-color: #006400;
+  }
+  #matchButton:hover {
+    background-color: #438844;
+  }
+  #clearButton {
+    background-color: #f44336;
+  }
+  #clearButton:hover {
+    background-color: #d1352d;
+  }
+  #newTargetBtn {
+    background-color: #007bff;
+  }
+  #newTargetBtn:hover {
+    background-color: #0056b3;
+  }
+  .button-row {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+  #results, #gameSection {
+    margin-top: 1.5rem;
+    background: #fef6e4;
+    padding: 1rem 1.2rem;
+    border-radius: 8px;
+    color: #4a4a4a;
+  }
+  #results strong {
+    color: #2e3a59;
+  }
+  a.psalm-link {
+    color: #2a558c;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  a.psalm-link:hover {
+    text-decoration: underline;
+  }
+  #gameInstructions {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  #gameInput {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 0.5rem;
+    border: 1.5px solid #bbb;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+  }
+  #gameSubmitBtn {
+    background-color: #28a745;
+  }
+  #gameSubmitBtn:hover {
+    background-color: #1e7e34;
+  }
+  #gameMessages {
+    margin-top: 1rem;
+    font-weight: 600;
+  }
+  #gameControls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  #gameScoreDisplay {
+    margin-left: auto;
+    font-weight: 700;
+  }
+  @media (max-width: 480px) {
+    .button-row {
+      flex-direction: column;
+    }
+    #gameControls {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.8rem;
+    }
+    #gameScoreDisplay {
+      margin-left: 0;
+    }
+  }
+  /* Selar support button style */
+  #selarLink {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #006400;
+    color: white;
+    font-weight: 700;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+  #selarLink:hover {
+    background-color: #e64a19;
+  }
+</style>
+</head>
+<body>
+
+<h1>The Psalmist Sword</h1>
+
+<section id="spiritualSection">
+  <label for="phraseInput">Request your Psalm and prayer point here:</label>
+  <input type="text" id="phraseInput" placeholder="Give me a Psalm for..." autocomplete="off" />
+
+  <div class="button-row">
+    <button id="matchButton">Find Matches &amp; Show Prayer</button>
+    <button id="clearButton">Clear</button>
+  </div>
+
+  <div id="results"></div>
+
+  <div style="margin: 1rem 0; text-align: center;">
+    <a id="selarLink" href="https://selar.com/showlove/divine-frequency-healer" target="_blank" rel="noopener noreferrer">
+      Support via Selar
+    </a>
+  </div>
+</section>
+
+<hr style="margin: 2rem 0; border: 1px solid #ccc" />
+
+<section id="gameSection">
+  <h2>Word Puzzle Game</h2>
+  <div id="gameInstructions">
+    <p>Try to guess a word or phrase that matches the target numeric value below.</p>
+    <p>Use your dictionary of words and phrases you have entered previously.</p>
+    <p><em>Click "New Target" to get a new numeric number to match at any time.</em></p>
+  </div>
+  <div id="gameControls">
+    <div><strong>Current Target Numeric Value:</strong> <span id="targetValue">-</span></div>
+    <button id="newTargetBtn">New Target</button>
+    <div id="gameScoreDisplay"><strong>Score:</strong> <span id="gameScore">0</span></div>
+  </div>
+
+  <input type="text" id="gameInput" placeholder="Type your guess here" autocomplete="off" />
+  <button id="gameSubmitBtn">Submit Guess</button>
+  <div id="gameMessages"></div>
+</section>
+
+<script>
+  // Force all links to open externally
+  document.addEventListener('click', function(e) {
+    const target = e.target.closest('a');
+    if (target && target.href) {
+      e.preventDefault();
+      window.open(target.href, '_blank');
+    }
+  });
+
+  function gematriaValue(text) {
+    let total = 0;
+    text = text.toUpperCase();
+    for (let char of text) {
+      if (char >= 'A' && char <= 'Z') {
+        total += char.charCodeAt(0) - 64;
+      }
+    }
+    return total;
+  }
+
+  function loadUserDictionary() {
+    const stored = localStorage.getItem('gematchUserDict');
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  function saveUserDictionary(dict) {
+    localStorage.setItem('gematchUserDict', JSON.stringify(dict));
+  }
+
+  function addToUserDictionary(phrase) {
+    const dict = loadUserDictionary();
+    const upperPhrase = phrase.toUpperCase();
+    if (!dict.includes(upperPhrase)) {
+      dict.push(upperPhrase);
+      saveUserDictionary(dict);
+    }
+  }
+
+  function buildGematriaDict() {
+    const dict = loadUserDictionary();
+    const gemDict = {};
+    for (const phrase of dict) {
+      const val = gematriaValue(phrase);
+      if (!gemDict[val]) gemDict[val] = [];
+      gemDict[val].push(phrase);
+    }
+    return gemDict;
+  }
+
+  function findExactMatches(phrase, maxResults) {
+    const val = gematriaValue(phrase);
+    const gemDict = buildGematriaDict();
+    let matches = gemDict[val] || [];
+    if (maxResults != null) matches = matches.slice(0, maxResults);
+    return { val, matches };
+  }
+
+  function getPsalmChapter(gematriaVal) {
+    return ((gematriaVal - 1) % 150) + 1;
+  }
+
+  function buildPsalmLink(chapter) {
+    return `https://www.biblegateway.com/passage/?search=Psalm+${chapter}&version=KJV`;
+  }
+
+  function getPrayerDay(gematriaVal) {
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return days[gematriaVal % 7];
+  }
+
+  function getPrayerHour(gematriaVal) {
+    const hour24 = gematriaVal % 24;
+    let mapped = (hour24 + 13) % 24;
+    if (mapped === 0) mapped = 24;
+    const ampm = mapped >= 12 ? "PM" : "AM";
+    let hour12 = mapped % 12;
+    if (hour12 === 0) hour12 = 12;
+    return `${hour12} ${ampm}`;
+  }
+
+  const phraseInput = document.getElementById('phraseInput');
+  const matchButton = document.getElementById('matchButton');
+  const clearButton = document.getElementById('clearButton');
+  const resultsDiv = document.getElementById('results');
+
+  const targetValueSpan = document.getElementById('targetValue');
+  const newTargetBtn = document.getElementById('newTargetBtn');
+  const gameInput = document.getElementById('gameInput');
+  const gameSubmitBtn = document.getElementById('gameSubmitBtn');
+  const gameMessages = document.getElementById('gameMessages');
+  const gameScoreSpan = document.getElementById('gameScore');
+
+  let currentTarget = null;
+  let score = 0;
+
+  matchButton.addEventListener('click', () => {
+    const phrase = phraseInput.value.trim();
+    resultsDiv.innerHTML = '';
+
+    if (!phrase) {
+      resultsDiv.textContent = "Please enter a word or phrase.";
+      return;
+    }
+
+    addToUserDictionary(phrase);
+
+    const { val, matches } = findExactMatches(phrase);
+    const psalmChapter = getPsalmChapter(val);
+    const psalmUrl = buildPsalmLink(psalmChapter);
+    const prayerDay = getPrayerDay(val);
+    const prayerHour = getPrayerHour(val);
+
+    resultsDiv.innerHTML = `<strong>Gematria value of "${phrase}":</strong> ${val}<br/>` +
+      `<strong>Corresponding Psalm Chapter:</strong> Psalm ${psalmChapter} ` +
+      `<a class="psalm-link" href="${psalmUrl}" target="_blank">[Read KJV]</a><br/>` +
+      `<strong>Prayer Day:</strong> ${prayerDay}<br/>` +
+      `<strong>Prayer Hour:</strong> ${prayerHour}<br/><br/>`;
+
+    if (matches.length > 0) {
+      resultsDiv.innerHTML += `<strong>Matching words/phrases in your dictionary (${matches.length}):</strong><ul>` +
+        matches.map(w => `<li>${w}</li>`).join('') + '</ul>';
+    } else {
+      resultsDiv.innerHTML += "No matching words found in your dictionary yet.";
+    }
+  });
+
+  clearButton.addEventListener('click', () => {
+    phraseInput.value = '';
+    resultsDiv.innerHTML = '';
+    resetGame();
+  });
+
+  function getRandomTarget() {
+    const dict = loadUserDictionary();
+    if (dict.length === 0) return null;
+    const gemDict = buildGematriaDict();
+    const keys = Object.keys(gemDict);
+    if (keys.length === 0) return null;
+    return Number(keys[Math.floor(Math.random() * keys.length)]);
+  }
+
+  function resetGame() {
+    currentTarget = null;
+    score = 0;
+    targetValueSpan.textContent = '-';
+    gameScoreSpan.textContent = '0';
+    gameMessages.textContent = 'Click "New Target" to start the game!';
+    gameInput.value = '';
+  }
+
+  function newTarget() {
+    const target = getRandomTarget();
+    if (target === null) {
+      gameMessages.textContent = "Your dictionary is empty. Add words or phrases first!";
+      currentTarget = null;
+      targetValueSpan.textContent = '-';
+      return false;
+    }
+    currentTarget = target;
+    targetValueSpan.textContent = currentTarget;
+    gameMessages.textContent = "New target assigned! Try to guess a matching word or phrase.";
+    gameInput.value = '';
+    return true;
+  }
+
+  newTargetBtn.addEventListener('click', () => {
+    if (newTarget()) {
+      score = 0;
+      gameScoreSpan.textContent = score;
+    }
+  });
+
+  gameSubmitBtn.addEventListener('click', () => {
+    const guess = gameInput.value.trim();
+    if (!guess) {
+      gameMessages.textContent = "Please enter a word or phrase to guess.";
+      return;
+    }
+    if (currentTarget === null) {
+      gameMessages.textContent = "Please click 'New Target' to start the game.";
+      return;
+    }
+    const guessVal = gematriaValue(guess);
+    if (guessVal === currentTarget) {
+      score++;
+      gameScoreSpan.textContent = score;
+      gameMessages.textContent = `Correct! "${guess}" matches the target gematria value. Get a new target!`;
+      gameInput.value = '';
+      newTarget();
+    } else {
+      gameMessages.textContent = `No match: "${guess}" has gematria value ${guessVal}, target is ${currentTarget}. Try again.`;
+      gameInput.value = '';
+    }
+  });
+
+  resetGame();
+</script>
+
+</body>
+</html>
