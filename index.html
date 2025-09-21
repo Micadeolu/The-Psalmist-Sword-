@@ -1,390 +1,507 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>The Psalmist Sword</title>
-<style>
-  body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    max-width: 700px;
-    margin: 1rem auto;
-    padding: 1rem 1.5rem;
-    background: #ffa726;
-    color: #222;
-  }
-  h1, h2 {
-    text-align: center;
-    color: #2e3a59;
-  }
-  label {
-    font-weight: 600;
-    margin-top: 1rem;
-    display: block;
-  }
-  input {
-    padding: 0.5rem;
-    width: 100%;
-    font-size: 1.1rem;
-    border: 1.8px solid #aaa;
-    border-radius: 5px;
-    margin-top: 0.4rem;
-    box-sizing: border-box;
-  }
-  button {
-    margin-top: 1rem;
-    padding: 0.75rem;
-    font-size: 1.15rem;
-    font-weight: 700;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    color: white;
-  }
-  #matchButton {
-    background-color: #006400;
-  }
-  #matchButton:hover {
-    background-color: #438844;
-  }
-  #clearButton {
-    background-color: #f44336;
-  }
-  #clearButton:hover {
-    background-color: #d1352d;
-  }
-  #newTargetBtn {
-    background-color: #007bff;
-  }
-  #newTargetBtn:hover {
-    background-color: #0056b3;
-  }
-  .button-row {
-    display: flex;
-    justify-content: flex-start;
-    gap: 0.8rem;
-    flex-wrap: wrap;
-  }
-  #results, #gameSection {
-    margin-top: 1.5rem;
-    background: #fef6e4;
-    padding: 1rem 1.2rem;
-    border-radius: 8px;
-    color: #4a4a4a;
-  }
-  #results strong {
-    color: #2e3a59;
-  }
-  a.psalm-link {
-    color: #2a558c;
-    font-weight: 700;
-    text-decoration: none;
-  }
-  a.psalm-link:hover {
-    text-decoration: underline;
-  }
-  #gameInstructions {
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    line-height: 1.4;
-  }
-  #gameInput {
-    width: 100%;
-    font-size: 1.1rem;
-    padding: 0.5rem;
-    border: 1.5px solid #bbb;
-    border-radius: 5px;
-    margin-bottom: 1rem;
-  }
-  #gameSubmitBtn {
-    background-color: #28a745;
-  }
-  #gameSubmitBtn:hover {
-    background-color: #1e7e34;
-  }
-  #gameMessages {
-    margin-top: 1rem;
-    font-weight: 600;
-  }
-  #gameControls {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  #gameScoreDisplay {
-    margin-left: auto;
-    font-weight: 700;
-  }
-  @media (max-width: 480px) {
-    .button-row {
-      flex-direction: column;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Words & Times — by The Sunday School Teacher</title>
+  <style>
+    :root{
+      --bg:#e8f7ea;
+      --card:#e0f3dd;
+      --accent:#0b7a3f;
+      --accent-dark:#07592c;
+      --muted:#2b2b2b;
+      --white:#ffffff;
+      --glass: rgba(255,255,255,0.6);
     }
-    #gameControls {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.8rem;
+    *{box-sizing:border-box}
+    body{
+      margin:12px;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg,var(--bg), #dff3e6);
+      color:var(--muted);
+      display:flex;
+      justify-content:center;
+      padding:18px;
     }
-    #gameScoreDisplay {
-      margin-left: 0;
+    .app{
+      width:100%;
+      max-width:760px;
+      background:var(--card);
+      border-radius:12px;
+      padding:18px;
+      box-shadow: 0 8px 30px rgba(3,50,22,0.08);
+      border:1px solid rgba(3,50,22,0.06);
     }
-  }
-  /* Selar support button style */
-  #selarLink {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: #006400;
-    color: white;
-    font-weight: 700;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-  }
-  #selarLink:hover {
-    background-color: #e64a19;
-  }
-</style>
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    h1{
+      font-size:20px;
+      margin:0;
+      color:var(--accent-dark);
+    }
+    .timer{
+      background:linear-gradient(90deg,var(--accent),var(--accent-dark));
+      color:var(--white);
+      padding:8px 12px;
+      border-radius:8px;
+      font-weight:700;
+      font-size:14px;
+      text-align:center;
+      min-width:170px;
+    }
+    label{display:block; margin-top:10px; font-size:14px}
+    input[type="text"], input[type="number"], select, textarea{
+      width:100%;
+      padding:10px;
+      margin-top:6px;
+      border-radius:8px;
+      border:1px solid rgba(3,50,22,0.12);
+      background:var(--white);
+      font-size:16px;
+    }
+    .row{display:flex; gap:12px; margin-top:10px;}
+    .row .col{flex:1}
+    button{
+      background:var(--accent);
+      color:var(--white);
+      border:none;
+      padding:10px 12px;
+      border-radius:8px;
+      font-size:15px;
+      cursor:pointer;
+    }
+    button.secondary{
+      background:transparent;
+      color:var(--accent-dark);
+      border:1px solid rgba(3,50,22,0.12);
+    }
+    .small{
+      font-size:13px; padding:8px 10px; border-radius:6px;
+    }
+    .result{
+      margin-top:14px;
+      padding:12px;
+      border-radius:8px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+      border:1px solid rgba(3,50,22,0.04);
+      font-size:16px;
+    }
+    .muted{color:rgba(0,0,0,0.6);font-size:13px}
+    .controls{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+    .center{display:flex;justify-content:center;align-items:center}
+    /* overlay lock */
+    .overlay{
+      position:fixed; inset:0; display:none;
+      background: linear-gradient(90deg, rgba(3,50,22,0.35), rgba(255,255,255,0.15));
+      justify-content:center; align-items:center; z-index:9999;
+    }
+    .overlay .panel{
+      background:var(--card); padding:18px; border-radius:12px; width:96%; max-width:520px;
+      box-shadow:0 12px 40px rgba(2,45,20,0.25); border:1px solid rgba(2,45,20,0.06);
+      text-align:center;
+    }
+    .notice{color:var(--accent-dark); font-weight:700; margin-bottom:8px}
+    .breakdown{font-family:monospace; font-size:14px; margin-top:8px}
+    footer{margin-top:16px; font-size:13px; color:rgba(0,0,0,0.6); text-align:center}
+    @media(max-width:520px){ header{flex-direction:column; align-items:flex-start} .timer{min-width:unset;width:100%}}
+  </style>
 </head>
 <body>
+  <div class="app" role="application" aria-label="Words & Times app">
+    <header>
+      <div>
+        <h1>Words & Times — <span style="font-weight:600">by The Sunday School Teacher</span></h1>
+        <div class="muted">Type a word or phrase, convert to a number and open the verse on BibleGateway</div>
+      </div>
+      <div class="timer" id="countdown">Starting...</div>
+    </header>
 
-<h1>The Psalmist Sword</h1>
+    <label for="queryInput">Enter a word or phrase</label>
+    <input id="queryInput" type="text" placeholder="e.g. grace or Jesus saves" autocomplete="off" />
 
-<section id="spiritualSection">
-  <label for="phraseInput">Request your Psalm and prayer point here:</label>
-  <input type="text" id="phraseInput" placeholder="Give me a Psalm for..." autocomplete="off" />
+    <div style="display:flex; gap:8px; margin-top:8px; align-items:center;">
+      <label style="display:flex; align-items:center; gap:8px; margin:0;">
+        <input id="useCustomMap" type="checkbox" /> Use custom letter values
+      </label>
+      <button class="small secondary" id="clearBtn">Clear All</button>
+    </div>
 
-  <div class="button-row">
-    <button id="matchButton">Find Matches &amp; Show Prayer</button>
-    <button id="clearButton">Clear</button>
+    <div class="controls">
+      <button id="convertBtn">Convert to Number</button>
+      <button id="generateBtn" class="secondary">Generate Reference</button>
+    </div>
+
+    <label for="inputNum">Converted / Manual number</label>
+    <input id="inputNum" type="number" placeholder="e.g. 34" />
+
+    <label for="bookLimit">How many books should be used for distribution? (1 - 66)</label>
+    <input id="bookLimit" type="number" min="1" max="66" placeholder="66" />
+
+    <label for="bibleVersion">Choose Bible Version (redirect on fetch)</label>
+    <select id="bibleVersion">
+      <option value="EASY">Easy English Version (EASY)</option>
+      <option value="KJV" selected>King James Version (KJV)</option>
+    </select>
+
+    <div class="row" style="margin-top:10px;">
+      <div class="col">
+        <button id="findBtn">Find & Open on BibleGateway</button>
+      </div>
+      <div style="width:150px;">
+        <button id="adminResetBtn" class="secondary">Admin Reset</button>
+      </div>
+    </div>
+
+    <div class="result" id="output">
+      <div class="muted">Result will appear here after conversion/generation.</div>
+    </div>
+
+    <div class="breakdown" id="breakdown" aria-live="polite"></div>
+
+    <footer>
+      <div>Free trial for 72 hours. After expiry you must unlock with Paystack or enter admin password.</div>
+      <div style="margin-top:12px; font-size:12px;">Produced by Prophet Michael Adewale Olubode (CCC Yahweh Parish Osun State Nigeria)</div>
+    </footer>
   </div>
 
-  <div id="results"></div>
+  <!-- Overlay shown when trial expired -->
+  <div class="overlay" id="lockOverlay" role="dialog" aria-modal="true">
+    <div class="panel">
+      <div class="notice">Trial Expired</div>
+      <div style="margin-bottom:12px">Your 72-hour free trial has ended. Unlock with Paystack or enter admin password to reopen.</div>
 
-  <div style="margin: 1rem 0; text-align: center;">
-    <a id="selarLink" href="https://selar.com/showlove/divine-frequency-healer" target="_blank" rel="noopener noreferrer">
-      Support via Selar
-    </a>
+      <div style="margin-bottom:10px">
+        <a href="https://paystack.shop/pay/fgbmy9ilb4" target="_blank" rel="noopener">
+          <button style="background:#c62828; padding:10px 18px; margin-bottom:8px">Unlock with Paystack</button>
+        </a>
+      </div>
+
+      <div style="margin-top:10px;">
+        <input id="adminPass" type="password" placeholder="Enter admin password to reopen" />
+        <div style="margin-top:8px;">
+          <button id="unlockBtn" class="small">Unlock (Admin)</button>
+        </div>
+        <div id="unlockMsg" style="margin-top:10px; color:#8a1f1f;"></div>
+      </div>
+    </div>
   </div>
-</section>
-
-<hr style="margin: 2rem 0; border: 1px solid #ccc" />
-
-<section id="gameSection">
-  <h2>Word Puzzle Game</h2>
-  <div id="gameInstructions">
-    <p>Try to guess a word or phrase that matches the target numeric value below.</p>
-    <p>Use your dictionary of words and phrases you have entered previously.</p>
-    <p><em>Click "New Target" to get a new numeric number to match at any time.</em></p>
-  </div>
-  <div id="gameControls">
-    <div><strong>Current Target Numeric Value:</strong> <span id="targetValue">-</span></div>
-    <button id="newTargetBtn">New Target</button>
-    <div id="gameScoreDisplay"><strong>Score:</strong> <span id="gameScore">0</span></div>
-  </div>
-
-  <input type="text" id="gameInput" placeholder="Type your guess here" autocomplete="off" />
-  <button id="gameSubmitBtn">Submit Guess</button>
-  <div id="gameMessages"></div>
-</section>
 
 <script>
-  // Force all links to open externally
-  document.addEventListener('click', function(e) {
-    const target = e.target.closest('a');
-    if (target && target.href) {
-      e.preventDefault();
-      window.open(target.href, '_blank');
-    }
-  });
+/* ---------- bibleData (same as you provided) ---------- */
+const bibleData = {
+  "Genesis": [31,25,24,26,32,22,24,22,29,32,32,20,18,24,21,16,27,33,38,18,34,24,20,67,34,35,46,22,35,43,55,32,20,31,29,43,36,30,23,23,57,38,34,34,28,34,31,22,33,26],
+  "Exodus": [22,25,22,31,23,30,29,28,35,29,10,51,22,31,27,36,16,27,25,26,36,31,33,18,40,37,21,43,46,38,18,35,23,35,35,38,29,31,43,38],
+  "Leviticus": [17,16,17,35,19,30,38,36,24,20,47,8,59,57,33,34,16,30,37,27,24,33,44,23,55,46,34],
+  "Numbers": [54,34,51,49,31,27,89,26,23,36,35,16,33,45,41,50,13,32,22,29,35,41,30,25,18,65,23,31,40,16,54,42,56,29,34,13],
+  "Deuteronomy": [46,37,29,49,33,25,26,20,29,22,32,32,18,29,23,22,20,22,21,20,23,30,25,22,19,19,26,69,28,20,30,52,29,12],
+  "Joshua": [18,24,17,24,15,27,26,35,27,43,23,24,33,15,63,10,18,28,51,9,45,34,16,33],
+  "Judges": [36,23,31,24,31,40,25,35,57,18,40,15,25,20,20,31,13,31,30,48,25],
+  "Ruth": [22,23,18,22],
+  "1 Samuel": [28,36,21,22,12,21,17,22,27,27,15,25,23,52,35,23,58,30,24,42,15,23,29,22,44,25,12,25,11,31,13],
+  "2 Samuel": [27,32,39,12,25,23,29,18,13,19,27,31,39,33,37,23,29,33,44,26,22,51,39,25],
+  "1 Kings": [53,46,28,34,18,38,51,66,28,29,43,33,34,31,34,34,24,46,21,43,29,53],
+  "2 Kings": [18,25,27,44,27,33,20,29,37,36,20,21,25,29,38,20,41,37,37,21,26,20,37,20,30],
+  "1 Chronicles": [54,55,24,43,26,81,40,40,44,14,47,40,14,17,29,43,27,17,19,8,30,19,32,31,31,32,34,21,30],
+  "2 Chronicles": [17,18,17,22,14,42,22,18,31,19,23,16,22,15,19,14,19,34,11,37,20,12,21,27,28,23,9,27,36,27,21,33,25,33,27,23],
+  "Ezra": [11,70,13,24,17,22,28,36,15,44],
+  "Nehemiah": [11,20,32,23,19,19,73,18,38,39,36,47,31],
+  "Esther": [22,23,15,17,14,14,10,17,32,3],
+  "Job": [22,13,26,21,27,30,21,22,35,22,20,25,28,22,35,22,16,21,29,29,34,30,17,25,6,14,23,28,25,31,40,22,33,37,16,33,24,41,30,24,34,17],
+  "Psalms": [6,12,8,8,12,10,17,9,20,18,7,9,6,7,5,11,15,50,14,9,13,31,6,10,22,12,14,9,11,12,24,11,22,22,28,12,40,22,13,17,13,11,5,26,17,11,9,14,20,23,19,9,6,7,23,13,11,11,17,12,8,12,11,10,13,20,7,35,36,5,24,20,28,23,10,12,20,72,13,19,16,8,18,12,13,17,7,18,52,17,16,15,5,23,11,13,12,9,9,5,8,28,22,35,45,48,43,13,31,7,10,10,9,8,18,19,2,29,176,7,8,9,4,8,5,6,5,6,8,8,3,18,3,3,21,26,9,8,24,14,10,8,12,15,21,10,20,14,9,6],
+  "Proverbs":[33,22,35,27,23,35,27,36,18,32,31,28,25,35,33,33,28,24,29,30,31,29,35,34,28,28,27,28,27,33,31],
+  "Ecclesiastes":[18,26,22,16,20,12,29,17,18,20,10,14],
+  "Song of Solomon":[17,17,11,16,16,13,13,14],
+  "Isaiah":[31,22,26,6,30,13,25,22,21,34,16,6,22,32,9,14,14,7,25,6,17,25,18,23,12,21,13,29,24,33,9,20,24,17,10,22,38,22,8,31,29,25,28,28,25,13,15,22,26,11,23,15,12,17,13,12,21,14,21,22,11,12,19,12,25,24,23,28,23,29],
+  "Jeremiah":[19,37,25,31,31,30,34,22,26,25,23,17,27,22,21,21,27,23,15,18,14,30,40,10,38,24,22,17,32,24,40,44,26,22,19,32,21,28,18,16,18,22,13,30,5,28,7,47,39,46,64,34],
+  "Lamentations":[22,22,66,22,22],
+  "Ezekiel":[28,10,27,17,17,14,27,18,11,22,25,28,23,23,8,63,24,32,14,49,32,31,49,27,17,21,36,26,21,26,18,32,33,31,15,38,28,23,29,49,26,20,27,31,25,24,23,35],
+  "Daniel":[21,49,30,37,31,28,28,27,27,21,45,13],
+  "Hosea":[11,23,5,19,15,11,16,14,17,15,12,14,16,9],
+  "Joel":[20,32,21],
+  "Amos":[15,16,15,13,27,14,17,14,15],
+  "Obadiah":[21],
+  "Jonah":[17,10,10,11],
+  "Micah":[16,13,12,13,15,16,20],
+  "Nahum":[15,13,19],
+  "Habakkuk":[17,20,19],
+  "Zephaniah":[18,15,20],
+  "Haggai":[15,23],
+  "Zechariah":[21,13,10,14,11,15,14,23,17,12,17,14,9,21],
+  "Malachi":[14,17,18,6],
+  "Matthew":[25,23,17,25,48,34,29,34,38,42,30,50,58,36,39,28,27,35,30,34,46,46,39,51,46,75,66,20],
+  "Mark":[45,28,35,41,43,56,37,38,50,52,33,44,37,72,47,20],
+  "Luke":[80,52,38,44,39,49,50,56,62,42,54,59,35,35,32,31,37,43,48,47,38,71,56,53],
+  "John":[51,25,36,54,47,71,53,59,41,42,57,50,38,31,27,33,26,40,42,31,25],
+  "Acts":[26,47,26,37,42,15,60,40,43,48,30,25,52,28,41,40,34,28,41,38,40,30,35,27,27,32,44,31],
+  "Romans":[32,29,31,25,21,23,25,39,33,21,36,21,14,23,33,27],
+  "1 Corinthians":[31,16,23,21,13,20,40,13,27,33,34,31,13,40,58,24],
+  "2 Corinthians":[24,17,18,18,21,18,16,24,15,18,33,21,14],
+  "Galatians":[24,21,29,31,26,18],
+  "Ephesians":[23,22,21,32,33,24],
+  "Philippians":[30,30,21,23],
+  "Colossians":[29,23,25,18],
+  "1 Thessalonians":[10,20,13,18,28],
+  "2 Thessalonians":[12,17,18],
+  "1 Timothy":[20,15,16,16,25,21],
+  "2 Timothy":[18,26,17,22],
+  "Titus":[16,15,15],
+  "Philemon":[25],
+  "Hebrews":[14,18,19,16,14,20,28,13,28,39,40,29,25],
+  "James":[27,26,18,17,20],
+  "1 Peter":[25,25,22,19,14],
+  "2 Peter":[21,22,18],
+  "1 John":[10,29,24,21,21],
+  "2 John":[13],
+  "3 John":[15],
+  "Jude":[25],
+  "Revelation":[20,29,22,11,14,17,17,13,21,11,19,17,18,20,8,21,18,24,21,15,27,21]
+};
 
-  function gematriaValue(text) {
-    let total = 0;
-    text = text.toUpperCase();
-    for (let char of text) {
-      if (char >= 'A' && char <= 'Z') {
-        total += char.charCodeAt(0) - 64;
+/* ---------- custom alphabet mapping (from your code) ---------- */
+const customAlphabet = {
+  a:7,b:9,c:22,d:5,e:18,f:15,g:6,h:13,i:15,
+  j:14,k:5,l:25,m:7,n:9,o:22,p:5,q:18,
+  r:15,s:6,t:13,u:15,v:14,w:5,x:25,y:7,z:9
+};
+
+/* ---------- trial timing config ---------- */
+const TRIAL_SECONDS = 72 * 3600; // 72 hours
+const STORAGE_KEY = 'wordsandtimes_start_v1';
+
+/* ---------- admin password ---------- */
+const ADMIN_PASSWORD = 'Olufunke.1963';
+
+/* ---------- utility & UI elements ---------- */
+const countdownEl = document.getElementById('countdown');
+const queryInput = document.getElementById('queryInput');
+const useCustomMap = document.getElementById('useCustomMap');
+const inputNum = document.getElementById('inputNum');
+const bookLimit = document.getElementById('bookLimit');
+const bibleVersion = document.getElementById('bibleVersion');
+const output = document.getElementById('output');
+const breakdownEl = document.getElementById('breakdown');
+const lockOverlay = document.getElementById('lockOverlay');
+const adminPass = document.getElementById('adminPass');
+const unlockBtn = document.getElementById('unlockBtn');
+const unlockMsg = document.getElementById('unlockMsg');
+const clearBtn = document.getElementById('clearBtn');
+
+/* ---------- initialise bookLimit default to 66 ---------- */
+if(!bookLimit.value) bookLimit.value = 66;
+
+/* ---------- countdown logic ---------- */
+function getStartTime(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw){
+    const now = Date.now();
+    localStorage.setItem(STORAGE_KEY, String(now));
+    return now;
+  }
+  return Number(raw);
+}
+function resetStartTime(){
+  const now = Date.now();
+  localStorage.setItem(STORAGE_KEY, String(now));
+  hideOverlay();
+  updateCountdown();
+}
+function secondsLeft(){
+  const start = getStartTime();
+  const elapsed = Math.floor((Date.now() - start)/1000);
+  const left = TRIAL_SECONDS - elapsed;
+  return left;
+}
+function formatDuration(sec){
+  if(sec < 0) sec = 0;
+  const d = Math.floor(sec/86400);
+  sec%=86400;
+  const h = Math.floor(sec/3600);
+  sec%=3600;
+  const m = Math.floor(sec/60);
+  const s = sec%60;
+  if(d>0) return `${d}d ${h}h ${m}m ${s}s`;
+  return `${h}h ${m}m ${s}s`;
+}
+function updateCountdown(){
+  const left = secondsLeft();
+  if(left > 0){
+    countdownEl.textContent = `Free: ${formatDuration(left)}`;
+    hideOverlay();
+    enableControls(true);
+  } else {
+    countdownEl.textContent = `Trial expired`;
+    showOverlay();
+    enableControls(false);
+  }
+}
+let countdownTimer = setInterval(updateCountdown, 1000);
+updateCountdown();
+
+/* ---------- overlay show/hide & enable/disable UI ---------- */
+function showOverlay(){
+  lockOverlay.style.display = 'flex';
+}
+function hideOverlay(){
+  lockOverlay.style.display = 'none';
+  adminPass.value = '';
+  unlockMsg.textContent = '';
+}
+function enableControls(enable){
+  queryInput.disabled = !enable;
+  useCustomMap.disabled = !enable;
+  document.getElementById('convertBtn').disabled = !enable;
+  document.getElementById('generateBtn').disabled = !enable;
+  document.getElementById('findBtn').disabled = !enable;
+  inputNum.disabled = !enable;
+  bookLimit.disabled = !enable;
+  bibleVersion.disabled = !enable;
+  clearBtn.disabled = !enable;
+}
+
+/* ---------- conversion logic ---------- */
+function convertQueryToNumber(){
+  const query = (queryInput.value || '').toLowerCase();
+  const useCustom = useCustomMap.checked;
+  let sum = 0;
+  let parts = [];
+  for(let i=0;i<query.length;i++){
+    const ch = query[i];
+    if(ch >= 'a' && ch <= 'z'){
+      let val = 0;
+      if(useCustom){
+        val = customAlphabet[ch] || 0;
+      } else {
+        val = ch.charCodeAt(0) - 96;
       }
-    }
-    return total;
-  }
-
-  function loadUserDictionary() {
-    const stored = localStorage.getItem('gematchUserDict');
-    return stored ? JSON.parse(stored) : [];
-  }
-
-  function saveUserDictionary(dict) {
-    localStorage.setItem('gematchUserDict', JSON.stringify(dict));
-  }
-
-  function addToUserDictionary(phrase) {
-    const dict = loadUserDictionary();
-    const upperPhrase = phrase.toUpperCase();
-    if (!dict.includes(upperPhrase)) {
-      dict.push(upperPhrase);
-      saveUserDictionary(dict);
+      parts.push(`${ch.toUpperCase()}(${val})`);
+      sum += val;
     }
   }
+  inputNum.value = sum;
+  breakdownEl.innerText = parts.length ? parts.join(' + ') + ` = ${sum}` : '';
+  output.innerHTML = `<div class="muted">Converted total: <strong>${sum}</strong></div>`;
+}
 
-  function buildGematriaDict() {
-    const dict = loadUserDictionary();
-    const gemDict = {};
-    for (const phrase of dict) {
-      const val = gematriaValue(phrase);
-      if (!gemDict[val]) gemDict[val] = [];
-      gemDict[val].push(phrase);
-    }
-    return gemDict;
+/* ---------- generate location logic (uses modulo scheme from your code) ---------- */
+function generateLocation(number, bookCount){
+  if(isNaN(number) || number < 1 || isNaN(bookCount) || bookCount < 1){
+    return { error: 'Enter valid positive values for number and book count.' };
   }
+  if(bookCount > Object.keys(bibleData).length) bookCount = Object.keys(bibleData).length;
+  const books = Object.keys(bibleData).slice(0, bookCount);
+  let bookIndex = number % bookCount;
+  if(bookIndex === 0) bookIndex = bookCount;
+  const bookName = books[bookIndex - 1];
+  const chapters = bibleData[bookName];
+  const totalChapters = chapters.length;
+  let chapterIndex = number % totalChapters;
+  if(chapterIndex === 0) chapterIndex = totalChapters;
+  const verseCount = chapters[chapterIndex - 1];
+  let verseIndex = number % verseCount;
+  if(verseIndex === 0) verseIndex = verseCount;
 
-  function findExactMatches(phrase, maxResults) {
-    const val = gematriaValue(phrase);
-    const gemDict = buildGematriaDict();
-    let matches = gemDict[val] || [];
-    if (maxResults != null) matches = matches.slice(0, maxResults);
-    return { val, matches };
+  return {
+    book: bookName,
+    chapter: chapterIndex,
+    verse: verseIndex
+  };
+}
+
+/* ---------- UI actions ---------- */
+document.getElementById('convertBtn').addEventListener('click', () => {
+  convertQueryToNumber();
+});
+
+document.getElementById('generateBtn').addEventListener('click', () => {
+  const num = Math.abs(parseInt(inputNum.value) || 0);
+  const bc = Math.abs(parseInt(bookLimit.value) || 66);
+  const loc = generateLocation(num, bc);
+  if(loc.error){
+    output.innerHTML = `<div style="color:#8a1f1f">${loc.error}</div>`;
+    return;
   }
+  output.innerHTML = `✔ <strong>Book:</strong> ${loc.book}<br>📖 <strong>Chapter:</strong> ${loc.chapter}<br>✳ <strong>Verse:</strong> ${loc.verse}`;
+  // store last located ref so Find button can redirect
+  window.lastLocatedVerse = `${loc.book} ${loc.chapter}:${loc.verse}`;
+});
 
-  function getPsalmChapter(gematriaVal) {
-    return ((gematriaVal - 1) % 150) + 1;
+document.getElementById('findBtn').addEventListener('click', () => {
+  const num = Math.abs(parseInt(inputNum.value) || 0);
+  const bc = Math.abs(parseInt(bookLimit.value) || 66);
+  const loc = generateLocation(num, bc);
+  if(loc.error){
+    output.innerHTML = `<div style="color:#8a1f1f">${loc.error}</div>`;
+    return;
   }
+  const version = bibleVersion.value || 'KJV';
+  const search = encodeURIComponent(`${loc.book} ${loc.chapter}:${loc.verse}`);
+  const url = `https://www.biblegateway.com/passage/?search=${search}&version=${version}`;
+  // open in new tab
+  window.open(url, '_blank');
+});
 
-  function buildPsalmLink(chapter) {
-    return `https://www.biblegateway.com/passage/?search=Psalm+${chapter}&version=KJV`;
+clearBtn.addEventListener('click', () => {
+  // clear all except bookLimit & version
+  queryInput.value = '';
+  inputNum.value = '';
+  breakdownEl.innerText = '';
+  output.innerHTML = `<div class="muted">Result will appear here after conversion/generation.</div>`;
+});
+
+/* ---------- admin reset button (quick access) ---------- */
+document.getElementById('adminResetBtn').addEventListener('click', () => {
+  const p = prompt('Enter admin password to reset 72h trial:');
+  if(!p) return;
+  if(p === ADMIN_PASSWORD){
+    resetStartTime();
+    alert('Trial reset for another 72 hours.');
+  } else {
+    alert('Wrong password.');
   }
+});
 
-  function getPrayerDay(gematriaVal) {
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    return days[gematriaVal % 7];
+/* ---------- overlay unlock ---------- */
+unlockBtn.addEventListener('click', () => {
+  const val = (adminPass.value || '').trim();
+  if(!val){ unlockMsg.textContent = 'Enter password.'; return; }
+  if(val === ADMIN_PASSWORD){
+    resetStartTime();
+    unlockMsg.style.color = '#0a6a2f';
+    unlockMsg.textContent = 'Unlocked — trial restarted.';
+    setTimeout(()=>{ hideOverlay(); }, 700);
+  } else {
+    unlockMsg.style.color = '#8a1f1f';
+    unlockMsg.textContent = 'Incorrect password.';
   }
+});
 
-  function getPrayerHour(gematriaVal) {
-    const hour24 = gematriaVal % 24;
-    let mapped = (hour24 + 13) % 24;
-    if (mapped === 0) mapped = 24;
-    const ampm = mapped >= 12 ? "PM" : "AM";
-    let hour12 = mapped % 12;
-    if (hour12 === 0) hour12 = 12;
-    return `${hour12} ${ampm}`;
-  }
+/* ---------- adminResetBtn also accessible via keyboard for parity ---------- */
+document.addEventListener('keydown', (e)=>{ if(e.key === 'F9'){ const p = prompt('Admin password:'); if(p===ADMIN_PASSWORD){ resetStartTime(); alert('Trial reset.'); } } });
 
-  const phraseInput = document.getElementById('phraseInput');
-  const matchButton = document.getElementById('matchButton');
-  const clearButton = document.getElementById('clearButton');
-  const resultsDiv = document.getElementById('results');
+/* ---------- initial conversion when pressing Enter in query input ---------- */
+queryInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){ convertQueryToNumber(); }
+});
 
-  const targetValueSpan = document.getElementById('targetValue');
-  const newTargetBtn = document.getElementById('newTargetBtn');
-  const gameInput = document.getElementById('gameInput');
-  const gameSubmitBtn = document.getElementById('gameSubmitBtn');
-  const gameMessages = document.getElementById('gameMessages');
-  const gameScoreSpan = document.getElementById('gameScore');
+/* ---------- ensure updateCountdown runs on load immediately ---------- */
+updateCountdown();
 
-  let currentTarget = null;
-  let score = 0;
+/* ---------- For convenience: if previously located ref exists show it ---------- */
+if(window.lastLocatedVerse){
+  // no-op (browser session only)
+}
 
-  matchButton.addEventListener('click', () => {
-    const phrase = phraseInput.value.trim();
-    resultsDiv.innerHTML = '';
-
-    if (!phrase) {
-      resultsDiv.textContent = "Please enter a word or phrase.";
-      return;
-    }
-
-    addToUserDictionary(phrase);
-
-    const { val, matches } = findExactMatches(phrase);
-    const psalmChapter = getPsalmChapter(val);
-    const psalmUrl = buildPsalmLink(psalmChapter);
-    const prayerDay = getPrayerDay(val);
-    const prayerHour = getPrayerHour(val);
-
-    resultsDiv.innerHTML = `<strong>Gematria value of "${phrase}":</strong> ${val}<br/>` +
-      `<strong>Corresponding Psalm Chapter:</strong> Psalm ${psalmChapter} ` +
-      `<a class="psalm-link" href="${psalmUrl}" target="_blank">[Read KJV]</a><br/>` +
-      `<strong>Prayer Day:</strong> ${prayerDay}<br/>` +
-      `<strong>Prayer Hour:</strong> ${prayerHour}<br/><br/>`;
-
-    if (matches.length > 0) {
-      resultsDiv.innerHTML += `<strong>Matching words/phrases in your dictionary (${matches.length}):</strong><ul>` +
-        matches.map(w => `<li>${w}</li>`).join('') + '</ul>';
-    } else {
-      resultsDiv.innerHTML += "No matching words found in your dictionary yet.";
-    }
-  });
-
-  clearButton.addEventListener('click', () => {
-    phraseInput.value = '';
-    resultsDiv.innerHTML = '';
-    resetGame();
-  });
-
-  function getRandomTarget() {
-    const dict = loadUserDictionary();
-    if (dict.length === 0) return null;
-    const gemDict = buildGematriaDict();
-    const keys = Object.keys(gemDict);
-    if (keys.length === 0) return null;
-    return Number(keys[Math.floor(Math.random() * keys.length)]);
-  }
-
-  function resetGame() {
-    currentTarget = null;
-    score = 0;
-    targetValueSpan.textContent = '-';
-    gameScoreSpan.textContent = '0';
-    gameMessages.textContent = 'Click "New Target" to start the game!';
-    gameInput.value = '';
-  }
-
-  function newTarget() {
-    const target = getRandomTarget();
-    if (target === null) {
-      gameMessages.textContent = "Your dictionary is empty. Add words or phrases first!";
-      currentTarget = null;
-      targetValueSpan.textContent = '-';
-      return false;
-    }
-    currentTarget = target;
-    targetValueSpan.textContent = currentTarget;
-    gameMessages.textContent = "New target assigned! Try to guess a matching word or phrase.";
-    gameInput.value = '';
-    return true;
-  }
-
-  newTargetBtn.addEventListener('click', () => {
-    if (newTarget()) {
-      score = 0;
-      gameScoreSpan.textContent = score;
-    }
-  });
-
-  gameSubmitBtn.addEventListener('click', () => {
-    const guess = gameInput.value.trim();
-    if (!guess) {
-      gameMessages.textContent = "Please enter a word or phrase to guess.";
-      return;
-    }
-    if (currentTarget === null) {
-      gameMessages.textContent = "Please click 'New Target' to start the game.";
-      return;
-    }
-    const guessVal = gematriaValue(guess);
-    if (guessVal === currentTarget) {
-      score++;
-      gameScoreSpan.textContent = score;
-      gameMessages.textContent = `Correct! "${guess}" matches the target gematria value. Get a new target!`;
-      gameInput.value = '';
-      newTarget();
-    } else {
-      gameMessages.textContent = `No match: "${guess}" has gematria value ${guessVal}, target is ${currentTarget}. Try again.`;
-      gameInput.value = '';
-    }
-  });
-
-  resetGame();
+/* ---------- accessibility small note ---------- */
+document.querySelectorAll('button, input, select').forEach(el=>{
+  el.addEventListener('focus', ()=> el.style.outline = '2px solid rgba(11,122,63,0.25)');
+  el.addEventListener('blur', ()=> el.style.outline = 'none');
+});
 </script>
-
 </body>
 </html>
